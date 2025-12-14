@@ -1,4 +1,4 @@
-package model;
+package src.model;
 
     public class kuotaPenuhException extends Exception {
     private String kodeKursusYangGagal;

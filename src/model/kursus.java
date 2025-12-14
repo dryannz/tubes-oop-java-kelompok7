@@ -1,4 +1,4 @@
-package src.model;
+package model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +11,10 @@ public abstract class kursus {
     protected List<siswa> daftarSiswa;
 
     // Constructor
-    public kursus(String kodeKursus, String nama, String kuotaMaksimal) {
+    public kursus(String kodeKursus, String nama, int kuotaMaksimal) {
         this.kodeKursus = kodeKursus;
         this.nama = nama;
-        this.kuotaMaksimal = kuotaMaksimal;
+        this.kuotaMaksimal = String.valueOf(kuotaMaksimal);
         this.jumlahSiswaTerdaftar = 0;
         this.daftarSiswa = new ArrayList<>();
     }

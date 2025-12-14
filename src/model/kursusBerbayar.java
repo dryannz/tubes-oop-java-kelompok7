@@ -1,10 +1,10 @@
-package src.model;
+package model;
 
 public class kursusBerbayar extends kursus {
     private double biayaKursus;
 
     // Constructor
-    public kursusBerbayar(String kodeKursus, String nama, String kuotaMaksimal, double biayaKursus) {
+    public kursusBerbayar(String kodeKursus, String nama, int kuotaMaksimal, double biayaKursus) {
         super(kodeKursus, nama, kuotaMaksimal);
         this.biayaKursus = biayaKursus;
     }

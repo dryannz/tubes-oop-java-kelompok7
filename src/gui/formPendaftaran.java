@@ -1,4 +1,4 @@
-package gui;
+package src.gui;
 
 public class formPendaftaran {
     

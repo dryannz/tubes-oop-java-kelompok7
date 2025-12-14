@@ -1,4 +1,5 @@
-package src;
+package gui;
+
 public class main {
     
 }

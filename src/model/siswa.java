@@ -12,13 +12,14 @@ public class siswa {
     private List<String> lihatRiwayatPendaftaran;
     
     // Constructor
-    public siswa(String idSiswa, String nama, String email, String nomorTelepon, List<String> daftarKursus, List<String> lihatRiwayatPendaftaran) {
+    public siswa(String idSiswa, String nama, String email, String nomorTelepon) {
         this.idSiswa = idSiswa;
         this.nama = nama;
         this.email = email;
         this.nomorTelepon = nomorTelepon;
-        this.daftarKursus = new ArrayList<>(daftarKursus);
-        this.lihatRiwayatPendaftaran = new ArrayList<>(lihatRiwayatPendaftaran);
+
+        this.daftarKursus = new ArrayList<>();
+        this.lihatRiwayatPendaftaran = new ArrayList<>();
     }
 
     // membuat method getName()

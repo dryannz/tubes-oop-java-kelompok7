@@ -1,9 +1,9 @@
-package src.model;
+package model;
 
 public class kursusGratis extends kursus {
     
     // Constructor
-    public kursusGratis(String kodeKursus, String nama, String kuotaMaksimal) {
+    public kursusGratis(String kodeKursus, String nama, int kuotaMaksimal) {
         super(kodeKursus, nama, kuotaMaksimal);
     }
 

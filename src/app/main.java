@@ -1,6 +1,6 @@
-package src;
+package app;
 
-import src.model.*;
+import model.*;
 
 public class main {
     public static void main(String[] args) {
@@ -12,7 +12,7 @@ public class main {
         kursus kursusJava = new kursusBerbayar(
                 "K001",
                 "Java OOP",
-                "1",        // kuota hanya 1 → biar exception kepicu
+                1,        // kuota hanya 1 → biar exception kepicu
                 500000
         );
 
@@ -41,7 +41,7 @@ public class main {
         try {
             // enroll pertama → sukses
             pembayaran p1 = sistem.enrollSiswa(
-                    "S01",
+                    "ST01",
                     "K001",
                     "TRANSFER"
             );
@@ -49,7 +49,7 @@ public class main {
 
             // enroll kedua → kuota penuh
             pembayaran p2 = sistem.enrollSiswa(
-                    "S02",
+                    "ST02",
                     "K001",
                     "TRANSFER"
             );

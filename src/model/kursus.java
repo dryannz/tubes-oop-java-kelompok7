@@ -8,7 +8,7 @@ public abstract class kursus {
     protected String nama;
     protected String kuotaMaksimal; 
     protected int jumlahSiswaTerdaftar;
-    protected List<Siswa> daftarSiswa;
+    protected List<siswa> daftarSiswa;
 
     // Constructor
     public kursus(String kodeKursus, String nama, String kuotaMaksimal) {
@@ -36,12 +36,12 @@ public abstract class kursus {
     }
 
     // method untuk menambahkan siswa ke dalam kursus
-    public void tambahSiswa(Siswa siswa) throws KuotaPenuhException {
+    public void tambahSiswa(siswa siswa) throws kuotaPenuhException {
         if (cekKetersediaan()) {
             daftarSiswa.add(siswa);
             jumlahSiswaTerdaftar++;
         } else {
-            throw new KuotaPenuhException(
+            throw new kuotaPenuhException(
                 this.kodeKursus, "Maaf,Kursus " + this.nama + " sudah penuh mencapai kuota maksimal. (" + this.kuotaMaksimal + " siswa)"
             );
         }
@@ -60,7 +60,7 @@ public abstract class kursus {
     public int getJumlahSiswaTerdaftar() {
         return jumlahSiswaTerdaftar;
     }
-    public List<Siswa> getDaftarSiswa() {
+    public List<siswa> getDaftarSiswa() {
         return daftarSiswa;
     }
 

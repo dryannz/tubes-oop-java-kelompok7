@@ -7,7 +7,6 @@ package src.model;
         super(pesanError);
         this.kodeKursusYangGagal = kodeKursusYangGagal;
     }
-
     public String getKodeKursusYangGagal() {
         return kodeKursusYangGagal;
     }

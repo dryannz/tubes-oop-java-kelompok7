@@ -52,8 +52,14 @@ public class sistemPendaftaran {
         kursus kursus = cariKursus(kodeKursus);
 
         if (siswa == null) {
-            throw new IllegalArgumentException("Error: Siswa dengan ID " + idSiswa + " tidak ditemukan.");
-        }
+                siswa = new siswa(
+                    idSiswa,
+                    "Siswa " + idSiswa,
+                    "-",
+                    "-"
+                );
+                daftarSiswa.add(siswa);
+            }
 
         if (kursus == null) {
             throw new IllegalArgumentException("Error: Kursus dengan kode " + kodeKursus + " tidak ditemukan.");
@@ -75,12 +81,17 @@ public class sistemPendaftaran {
         if (biaya > 0) {
             // Simulasi: Jika metode pembayaran kosong, status PENDING. Jika ada, SUKSES.
             if (metodePembayaran == null || metodePembayaran.isEmpty()) {
-                 statusPembayaran = "PENDING";
-                 // Hapus siswa dari kursus jika PENDING dan kursus berbayar (Trade-off: di sistem nyata ini lebih kompleks)
-                 kursus.getDaftarSiswa().remove(siswa); 
-                 kursus.jumlahSiswaTerdaftar--;
+                statusPembayaran = "PENDING";
+                // Hapus siswa dari kursus jika PENDING dan kursus berbayar
+                kursus.getDaftarSiswa().remove(siswa); 
+                kursus.jumlahSiswaTerdaftar--;
+            } else if (metodePembayaran.equalsIgnoreCase("GRATIS")) {
+                // Tambahan: kalau bayar "GRATIS" untuk kursus berbayar, PENDING juga
+                statusPembayaran = "PENDING";
+                kursus.getDaftarSiswa().remove(siswa);
+                kursus.jumlahSiswaTerdaftar--;
             } else {
-                 statusPembayaran = "SUKSES"; // Simulasi sukses bayar
+                statusPembayaran = "SUKSES"; // Simulasi sukses bayar
             }
         } else {
             statusPembayaran = "SUKSES"; // Kursus gratis langsung sukses

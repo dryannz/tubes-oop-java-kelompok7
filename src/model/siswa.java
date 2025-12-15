@@ -13,14 +13,13 @@ public class siswa {
     
     // Constructor
     public siswa(String idSiswa, String nama, String email, String nomorTelepon) {
-        this.idSiswa = idSiswa;
-        this.nama = nama;
-        this.email = email;
-        this.nomorTelepon = nomorTelepon;
-
-        this.daftarKursus = new ArrayList<>();
-        this.lihatRiwayatPendaftaran = new ArrayList<>();
-    }
+    this.idSiswa = idSiswa;
+    this.nama = nama;
+    this.email = email;
+    this.nomorTelepon = nomorTelepon;
+    this.daftarKursus = new ArrayList<>();
+    this.lihatRiwayatPendaftaran = new ArrayList<>();
+}
 
     // membuat method getName()
     public String getName() {
@@ -46,9 +45,16 @@ public class siswa {
     public String getNama() {
         return nama;
     } 
+    public String getEmail() {
+        return email;
+    } 
+    public String getNomorTelepon() {
+        return nomorTelepon;
+    }
     public List<String> getDaftarKursus() {
         return daftarKursus;
-    }public List<String> getLihatRiwayatPendaftaran() {
+    }
+    public List<String> getLihatRiwayatPendaftaran() {
         return lihatRiwayatPendaftaran;
     }
 }

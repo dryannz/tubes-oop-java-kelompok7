@@ -3,7 +3,7 @@ package model;
 public class kursusGratis extends kursus {
     
     // Constructor
-    public kursusGratis(String kodeKursus, String nama, int kuotaMaksimal) {
+    public kursusGratis(String kodeKursus, String nama, int kuotaMaksimal, double par1) {
         super(kodeKursus, nama, kuotaMaksimal);
     }
 

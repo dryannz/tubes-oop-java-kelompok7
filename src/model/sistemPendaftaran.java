@@ -129,4 +129,9 @@ public class sistemPendaftaran {
     // Getter yang tersisa
     public List<kursus> getDaftarKursus() { return daftarKursus; }
     public List<siswa> getDaftarSiswa() { return daftarSiswa; }
+
+    public String getIdSistem() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getIdSistem'");
+    }
 }

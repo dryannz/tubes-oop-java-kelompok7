@@ -9,5 +9,8 @@ package model;
     }
     public String getKodeKursusYangGagal() {
         return kodeKursusYangGagal;
+    } 
+    public String getPesanError() {
+        return super.getMessage();
     }
 }

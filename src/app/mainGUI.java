@@ -1,23 +1,18 @@
 package app;
 
-import gui.*;
-import javax.swing.*;
+import gui.formPendaftaran;
 import model.*;
 
 public class mainGUI {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            // Buat sistem
-            sistemPendaftaran sistem = new sistemPendaftaran("SYS001");
-            
-            // Tambah beberapa kursus
-            sistem.tambahKursus(new kursusBerbayar("K001", "Java Programming", 10, 500000));
-            sistem.tambahKursus(new kursusGratis("K002", "HTML Dasar", 20, 0));
-            sistem.tambahKursus(new kursusBerbayar("K003", "Database SQL", 15, 750000));
-            sistem.tambahKursus(new kursusGratis("K004", "Python Pemula", 25, 0));
-            
-            // Tampilkan form (form kosong untuk siswa baru)
-            new formPendaftaran(sistem);
-        });
+        sistemPendaftaran sistem = new sistemPendaftaran("SYS001");
+        
+        // Tambah kursus
+        sistem.tambahKursus(new kursusBerbayar("JAV01", "Java Programming", 50, 500000));
+        sistem.tambahKursus(new kursusBerbayar("BAS02", "Basis Data", 25, 450000));
+        sistem.tambahKursus(new kursusGratis("PRB03", "Proses Bisnis", 15, 0));
+        
+        // Jalankan GUI
+        new formPendaftaran(sistem);
     }
 }

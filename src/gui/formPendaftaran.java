@@ -1,292 +1,229 @@
 package gui;
 
-import java.awt.*;
+import model.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import model.*;
+import java.awt.*;
 
 public class formPendaftaran extends JFrame {
+    private sistemPendaftaran sistem;
+    private daftarKursus frameDataSiswa;
+    
     private JTextField inputNama, inputEmail, inputTelepon;
     private JComboBox<String> comboKursus;
-    private JComboBox<String> comboMetodeBayar;
-    private JTextArea outputArea;
+    private JComboBox<String> comboMetode; 
     private JLabel labelBiaya;
-    private sistemPendaftaran sistem;
-
+    
     public formPendaftaran(sistemPendaftaran sistem) {
         this.sistem = sistem;
-        initUI();
+        setupGUI();
+        setVisible(true);
     }
-
-    private void initUI() {
+    
+    private void setupGUI() {
         setTitle("Pendaftaran Kursus Online");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 600);
+        setSize(500, 450);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         
         // Panel utama
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
-        // === PANEL INPUT ===
-        JPanel inputPanel = new JPanel(new GridLayout(7, 2, 10, 10));
-        inputPanel.setBorder(new TitledBorder("Form Pendaftaran"));
+        // Header
+        JLabel title = new JLabel("PENDAFTARAN KURSUS", SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 18));
+        title.setForeground(new Color(70, 130, 180));
         
-        // Komponen input
+        // Panel form
+        JPanel formPanel = new JPanel(new GridLayout(7, 2, 10, 10));
+        formPanel.setBorder(new TitledBorder("Form Pendaftaran"));
+        
         inputNama = new JTextField();
         inputEmail = new JTextField();
         inputTelepon = new JTextField();
         
         comboKursus = new JComboBox<>(sistem.getDaftarNamaKursus());
+        comboKursus.addActionListener(e -> updateBiaya());
         
         labelBiaya = new JLabel("Rp 0");
-        labelBiaya.setForeground(new Color(0, 100, 0));
+        labelBiaya.setForeground(Color.RED);
         labelBiaya.setFont(new Font("Arial", Font.BOLD, 12));
         
-        String[] metodeAwal = {"Pilih kursus terlebih dahulu"};
-        comboMetodeBayar = new JComboBox<>(metodeAwal);
-        comboMetodeBayar.setEnabled(false);
+        // METODE BAYAR - DIPINDAH KE VARIABLE INSTANCE
+        comboMetode = new JComboBox<>(new String[]{"Transfer Bank", "Kartu Kredit", "E-Wallet"});
         
-        JButton btnDaftar = new JButton("Daftar Sekarang");
-        btnDaftar.setBackground(new Color(70, 130, 180));
-        btnDaftar.setForeground(Color.WHITE);
+        // Tombol
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JButton btnReset = new JButton("Reset");
+        JButton btnDaftar = new JButton("DAFTAR SEKARANG");
+        btnDaftar.setBackground(new Color(46, 204, 113));
+        btnDaftar.setForeground(Color.WHITE);
+        btnDaftar.addActionListener(e -> prosesDaftar());
         
-        // Tambah komponen ke panel input
-        inputPanel.add(new JLabel("Nama Lengkap:"));
-        inputPanel.add(inputNama);
-        inputPanel.add(new JLabel("Email:"));
-        inputPanel.add(inputEmail);
-        inputPanel.add(new JLabel("Telepon:"));
-        inputPanel.add(inputTelepon);
-        inputPanel.add(new JLabel("Pilih Kursus:"));
-        inputPanel.add(comboKursus);
-        inputPanel.add(new JLabel("Biaya Kursus:"));
-        inputPanel.add(labelBiaya);
-        inputPanel.add(new JLabel("Metode Pembayaran:"));
-        inputPanel.add(comboMetodeBayar);
-        inputPanel.add(btnReset);
-        inputPanel.add(btnDaftar);
+        JButton btnLihatData = new JButton("Lihat Data Terdaftar");
+        btnLihatData.setBackground(new Color(155, 89, 182));
+        btnLihatData.setForeground(Color.WHITE);
+        btnLihatData.addActionListener(e -> tampilkanDataSiswa());
         
-        // === PANEL OUTPUT ===
-        JPanel outputPanel = new JPanel(new BorderLayout());
-        outputPanel.setBorder(new TitledBorder("Hasil Pendaftaran"));
+        // Tambah ke form
+        formPanel.add(new JLabel("Nama Lengkap:"));
+        formPanel.add(inputNama);
+        formPanel.add(new JLabel("Email:"));
+        formPanel.add(inputEmail);
+        formPanel.add(new JLabel("Telepon:"));
+        formPanel.add(inputTelepon);
+        formPanel.add(new JLabel("Pilih Kursus:"));
+        formPanel.add(comboKursus);
+        formPanel.add(new JLabel("Biaya Kursus:"));
+        formPanel.add(labelBiaya);
+        formPanel.add(new JLabel("Metode Bayar:"));
+        formPanel.add(comboMetode);
         
-        outputArea = new JTextArea(12, 40);
-        outputArea.setEditable(false);
-        outputArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        outputArea.setBackground(new Color(240, 240, 240));
+        // Button panel
+        buttonPanel.add(btnReset);
+        buttonPanel.add(btnDaftar);
+        buttonPanel.add(btnLihatData);
         
-        JScrollPane scrollPane = new JScrollPane(outputArea);
-        outputPanel.add(scrollPane, BorderLayout.CENTER);
-        
-        // === PANEL TOMBOL OUTPUT ===
-        JPanel outputButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        
-        JButton btnClear = new JButton("Clear Output");
-        btnClear.setBackground(new Color(220, 220, 220));
-        
-        JButton btnTampilkanKursus = new JButton("Tampilkan Kursus Tersedia");
-        btnTampilkanKursus.setBackground(new Color(50, 150, 100));
-        btnTampilkanKursus.setForeground(Color.WHITE);
-        
-        JButton btnTampilkanSiswa = new JButton("Tampilkan Data Siswa");
-        btnTampilkanSiswa.setBackground(new Color(150, 100, 200));
-        btnTampilkanSiswa.setForeground(Color.WHITE);
-        
-        outputButtonPanel.add(btnClear);
-        outputButtonPanel.add(btnTampilkanKursus);
-        outputButtonPanel.add(btnTampilkanSiswa);
-        
-        outputPanel.add(outputButtonPanel, BorderLayout.SOUTH);
-        
-        // === GABUNG PANEL ===
-        mainPanel.add(inputPanel, BorderLayout.NORTH);
-        mainPanel.add(outputPanel, BorderLayout.CENTER);
-        
-        // === ACTION LISTENERS ===
-        comboKursus.addActionListener(e -> updateMetodePembayaran());
-        
-        btnReset.addActionListener(e -> {
-            inputNama.setText("");
-            inputEmail.setText("");
-            inputTelepon.setText("");
-            comboKursus.setSelectedIndex(0);
-            updateMetodePembayaran();
-        });
-        
-        btnDaftar.addActionListener(e -> prosesPendaftaran());
-        
-        btnClear.addActionListener(e -> outputArea.setText(""));
-        
-        btnTampilkanKursus.addActionListener(e -> tampilkanKursusTersedia());
-        
-        btnTampilkanSiswa.addActionListener(e -> tampilkanDataSiswa());
-        
-        // Inisialisasi awal
-        updateMetodePembayaran();
+        // Gabung semua
+        mainPanel.add(title, BorderLayout.NORTH);
+        mainPanel.add(formPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         
         add(mainPanel);
-        setVisible(true);
+        updateBiaya(); // Panggil sekali di awal untuk set status awal
     }
     
-    private void updateMetodePembayaran() {
+    private void updateBiaya() {
         String selected = (String) comboKursus.getSelectedItem();
         if (selected == null) return;
         
-        String kodeKursus = "";
-        if (selected.contains("(")) {
-            kodeKursus = selected.substring(selected.indexOf('(') + 1, selected.indexOf(')'));
-        }
-        
-        kursus kursusDipilih = sistem.cariKursus(kodeKursus.trim());
-        
-        if (kursusDipilih != null) {
-            double biaya = kursusDipilih.getBiaya();
+        String kode = selected.substring(selected.indexOf('(')+1, selected.indexOf(')'));
+        kursus k = sistem.cariKursus(kode.trim());
+        if (k != null) {
+            double biaya = k.getBiaya();
             labelBiaya.setText("Rp " + String.format("%,.0f", biaya));
             
-            if (biaya > 0) {
-                String[] metodeBayar = {"Transfer Bank", "Kartu Kredit/Debit", "E-Wallet", "QRIS", "Virtual Account"};
-                comboMetodeBayar.setModel(new DefaultComboBoxModel<>(metodeBayar));
-                comboMetodeBayar.setEnabled(true);
-                comboMetodeBayar.setSelectedIndex(0);
+            // LOGIKA BARU: Nonaktifkan comboMetode jika biaya = 0
+            if (biaya == 0) {
+                comboMetode.setEnabled(false);
+                comboMetode.setSelectedItem("Transfer Bank"); // Set default value
             } else {
-                String[] metodeGratis = {"GRATIS"};
-                comboMetodeBayar.setModel(new DefaultComboBoxModel<>(metodeGratis));
-                comboMetodeBayar.setEnabled(false);
+                comboMetode.setEnabled(true);
             }
         }
     }
     
-    private void prosesPendaftaran() {
+    private void prosesDaftar() {
         String nama = inputNama.getText().trim();
         String email = inputEmail.getText().trim();
         String telepon = inputTelepon.getText().trim();
         
         if (nama.isEmpty() || email.isEmpty() || telepon.isEmpty()) {
-            tambahOutput("ERROR: Semua field data diri harus diisi!");
-            JOptionPane.showMessageDialog(this, "Semua field data diri harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Isi semua data!");
             return;
         }
         
         String selectedKursus = (String) comboKursus.getSelectedItem();
-        if (selectedKursus == null) {
-            tambahOutput("ERROR: Pilih kursus terlebih dahulu!");
-            return;
-        }
-        
-        String selectedMetode = (String) comboMetodeBayar.getSelectedItem();
-        if (selectedMetode == null || selectedMetode.equals("Pilih kursus terlebih dahulu")) {
-            tambahOutput("ERROR: Pilih metode pembayaran!");
-            return;
-        }
-        
-        String kodeKursus = "";
-        String namaKursus = selectedKursus;
-        if (selectedKursus.contains("(")) {
-            kodeKursus = selectedKursus.substring(selectedKursus.indexOf('(') + 1, selectedKursus.indexOf(')'));
-            namaKursus = selectedKursus.substring(0, selectedKursus.indexOf('(')).trim();
-        }
+        String kodeKursus = selectedKursus.substring(
+            selectedKursus.indexOf('(')+1, 
+            selectedKursus.indexOf(')')
+        );
+        String namaKursus = selectedKursus.substring(0, selectedKursus.indexOf('(')).trim();
         
         try {
+            String idSiswa = "S" + String.format("%03d", sistem.getDaftarSiswa().size() + 1);
+            siswa siswaBaru = new siswa(idSiswa, nama, email, telepon);
+            
+            // Simpan ke sistem (simplified)
+            sistem.getDaftarSiswa().add(siswaBaru);
             kursus kursusDipilih = sistem.cariKursus(kodeKursus.trim());
-            if (kursusDipilih == null) {
-                tambahOutput("ERROR: Kursus " + kodeKursus + " tidak ditemukan!");
-                return;
+            
+            if (kursusDipilih != null) {
+                siswaBaru.getDaftarKursus().add(kodeKursus.trim());
+                
+                // Ambil metode bayar dari comboBox
+                String metodeBayar = (String) comboMetode.getSelectedItem();
+                
+                // TAMPILKAN POPUP KONFIRMASI
+                showConfirmationPopup(nama, email, telepon, namaKursus, kodeKursus, 
+                                     kursusDipilih.getBiaya(), metodeBayar, idSiswa);
+                
+                // Reset form
+                inputNama.setText("");
+                inputEmail.setText("");
+                inputTelepon.setText("");
             }
-            
-            // Tampilkan data input
-            tambahOutput("=".repeat(60));
-            tambahOutput("PENDAFTARAN BARU - " + new java.util.Date());
-            tambahOutput("=".repeat(60));
-            tambahOutput("DATA SISWA:");
-            tambahOutput("  Nama    : " + nama);
-            tambahOutput("  Email   : " + email);
-            tambahOutput("  Telepon : " + telepon);
-            
-            tambahOutput("\nDATA KURSUS:");
-            tambahOutput("  Kursus  : " + namaKursus);
-            tambahOutput("  Kode    : " + kodeKursus);
-            tambahOutput("  Biaya   : Rp " + String.format("%,.0f", kursusDipilih.getBiaya()));
-            tambahOutput("  Metode  : " + selectedMetode);
-            
-            String idSiswaBaru = "S" + String.format("%03d", sistem.getDaftarSiswa().size() + 1);
-            
-            tambahOutput("\nPROSES:");
-            tambahOutput("  ✓ Membuat akun siswa: " + idSiswaBaru);
-            tambahOutput("  ✓ Memproses pembayaran: " + selectedMetode);
-            
-            siswa siswaBaru = new siswa(idSiswaBaru, nama, email, telepon);
-            
-            pembayaran trx = sistem.enrollSiswa(idSiswaBaru, kodeKursus.trim(), selectedMetode);
-            
-            tambahOutput("\nHASIL TRANSAKSI:");
-            tambahOutput("  ID Transaksi : " + trx.getIdTransaksi());
-            tambahOutput("  Status       : " + trx.getStatus());
-            tambahOutput("  Tanggal      : " + trx.getTanggal());
-            
-            tambahOutput("\n" + "=".repeat(60));
-            if (trx.getStatus().equals("SUKSES")) {
-                tambahOutput("✓ PENDAFTARAN BERHASIL!");
-                tambahOutput("  ID Siswa: " + idSiswaBaru);
-            } else {
-                tambahOutput("⚠ MENUNGGU PEMBAYARAN");
-            }
-            tambahOutput("=".repeat(60) + "\n\n");
-            
-            // Reset telepon field
-            inputTelepon.setText("");
             
         } catch (Exception e) {
-            tambahOutput("ERROR: " + e.getMessage() + "\n");
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
     }
     
-    private void tampilkanKursusTersedia() {
-        tambahOutput("\n" + "=".repeat(60));
-        tambahOutput("DAFTAR KURSUS YANG TERSEDIA");
-        tambahOutput("=".repeat(60));
+    private void showConfirmationPopup(String nama, String email, String telepon,
+                                      String namaKursus, String kodeKursus, 
+                                      double biaya, String metode, String idSiswa) {
         
-        int nomor = 1;
-        for (kursus k : sistem.getDaftarKursus()) {
-            tambahOutput(String.format("%2d. %-30s (Kode: %s)", nomor++, k.getNama(), k.getKodeKursus()));
-            tambahOutput(String.format("    Biaya: Rp %,.0f", k.getBiaya()));
-            tambahOutput(String.format("    Kuota: %s/%s siswa", 
-                k.getJumlahSiswaTerdaftar(), k.getKuotaMaksimal()));
-            tambahOutput("    ──────────────────────────────────────────");
-        }
-        tambahOutput("=".repeat(60) + "\n");
-    }
-    
-    private void tampilkanDataSiswa() {
-        tambahOutput("\n" + "=".repeat(60));
-        tambahOutput("DATA SISWA TERDAFTAR DI SISTEM");
-        tambahOutput("=".repeat(60));
+        JDialog popup = new JDialog(this, "Konfirmasi Pendaftaran", true);
+        popup.setSize(400, 350);
+        popup.setLocationRelativeTo(this);
+        popup.setLayout(new BorderLayout());
         
-        int nomor = 1;
-        for (siswa s : sistem.getDaftarSiswa()) {
-            tambahOutput(String.format("%2d. ID: %-8s | Nama: %-20s", nomor++, s.getIdSiswa(), s.getNama()));
-            tambahOutput(String.format("    Email: %-25s | Telp: %s", s.getEmail(), s.getNomorTelepon()));
-            
-            // Tampilkan kursus yang diambil
-            if (s.getDaftarKursus().isEmpty()) {
-                tambahOutput("    Kursus: (belum mengambil kursus)");
-            } else {
-                tambahOutput("    Kursus yang diambil:");
-                for (String kodeKursus : s.getDaftarKursus()) {
-                    kursus k = sistem.cariKursus(kodeKursus);
-                    if (k != null) {
-                        tambahOutput("      • " + k.getNama() + " (" + k.getKodeKursus() + ")");
-                    }
-                }
-            }
-            tambahOutput("    ──────────────────────────────────────────");
+        // Header
+        JPanel header = new JPanel();
+        header.setBackground(new Color(46, 204, 113));
+        JLabel title = new JLabel("DAFTAR SEKARANG");
+        title.setFont(new Font("Arial", Font.BOLD, 16));
+        title.setForeground(Color.WHITE);
+        header.add(title);
+        
+        // Konten
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        // Data
+        content.add(new JLabel("HASIL DAN OUTPUT"));
+        content.add(Box.createRigidArea(new Dimension(0, 10)));
+        content.add(new JLabel("Nama: " + nama));
+        content.add(new JLabel("Email: " + email));
+        content.add(new JLabel("Telepon: " + telepon));
+        content.add(Box.createRigidArea(new Dimension(0, 10)));
+        
+        // Data Kursus
+        content.add(new JLabel("DATA KURSUS:"));
+        content.add(new JLabel("Kursus: " + namaKursus));
+        content.add(new JLabel("Kode: " + kodeKursus));
+        content.add(new JLabel("Biaya: Rp " + String.format("%,.0f", biaya)));
+        
+        // Tampilkan metode bayar atau "GRATIS" jika biaya = 0
+        if (biaya == 0) {
+            content.add(new JLabel("Metode: GRATIS (Tidak perlu pembayaran)"));
+        } else {
+            content.add(new JLabel("Metode: " + metode));
         }
-        tambahOutput("=".repeat(60) + "\n");
+        
+        // ID Siswa
+        content.add(Box.createRigidArea(new Dimension(0, 10)));
+        content.add(new JLabel("ID Pendaftaran: " + idSiswa));
+        
+        // Tombol
+        JButton btnOK = new JButton("OK");
+        btnOK.addActionListener(e -> popup.dispose());
+        
+        popup.add(header, BorderLayout.NORTH);
+        popup.add(content, BorderLayout.CENTER);
+        popup.add(btnOK, BorderLayout.SOUTH);
+        popup.setVisible(true);
     }
     
-    private void tambahOutput(String text) {
-        outputArea.append(text + "\n");
-        outputArea.setCaretPosition(outputArea.getDocument().getLength());
+   private void tampilkanDataSiswa() {
+    if (frameDataSiswa == null) {
+        frameDataSiswa = new daftarKursus(sistem);
+    } else {
+        // PERBAIKAN: Refresh data setiap kali frame dibuka
+        frameDataSiswa.refreshData();
+        frameDataSiswa.setVisible(true);
     }
+}
 }

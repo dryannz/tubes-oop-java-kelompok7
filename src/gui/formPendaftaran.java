@@ -129,6 +129,21 @@ public class formPendaftaran extends JFrame {
             selectedKursus.indexOf('(')+1, 
             selectedKursus.indexOf(')')
         );
+         int jumlahSiswa = 0;
+        for (siswa s : sistem.getDaftarSiswa()) {
+        if (s.getDaftarKursus().contains(kodeKursus)) {
+            jumlahSiswa++;
+        }
+        }
+      
+        if (jumlahSiswa >= 3) {
+            kuotaPenuhException exception = new kuotaPenuhException(
+                kodeKursus,
+                "Kursus sudah penuh (" + jumlahSiswa + "/3)"
+            );
+            new dataKursus(this, exception).setVisible(true);
+            return; 
+        }
         String namaKursus = selectedKursus.substring(0, selectedKursus.indexOf('(')).trim();
         
         try {
@@ -159,6 +174,8 @@ public class formPendaftaran extends JFrame {
             JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
     }
+
+    
     
     private void showConfirmationPopup(String nama, String email, String telepon,
                                       String namaKursus, String kodeKursus, 
@@ -221,7 +238,6 @@ public class formPendaftaran extends JFrame {
     if (frameDataSiswa == null) {
         frameDataSiswa = new daftarKursus(sistem);
     } else {
-        // PERBAIKAN: Refresh data setiap kali frame dibuka
         frameDataSiswa.refreshData();
         frameDataSiswa.setVisible(true);
     }

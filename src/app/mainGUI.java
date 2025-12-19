@@ -1,18 +1,22 @@
 package app;
 
-import gui.*;
 import model.*;
+import gui.*;
 
 public class mainGUI {
     public static void main(String[] args) {
+        // Inisialisasi sistem
         sistemPendaftaran sistem = new sistemPendaftaran("SYS001");
         
-        // Tambah kursus
-        sistem.tambahKursus(new kursusBerbayar("JAV01", "Java Programming", 5, 500000));
-        sistem.tambahKursus(new kursusBerbayar("BAS02", "Basis Data", 7, 450000));
-        sistem.tambahKursus(new kursusGratis("PRB03", "Proses Bisnis", 3, 0));
+        // Tambah kursus ke sistem
+        sistem.tambahKursus(new kursusBerbayar("K001", "Java Programming", 3, 500000));
+        sistem.tambahKursus(new kursusBerbayar("K002", "Python Data Science", 3, 750000));
+        sistem.tambahKursus(new kursusGratis("K003", "Web Development Dasar", 3, 0));
+        sistem.tambahKursus(new kursusGratis("K004", "UI/UX Design", 3, 0));
         
-        // Jalankan GUI
-        new formPendaftaran(sistem);
+        // Jalankan GUI di EDT
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            new formPendaftaran(sistem);
+        });
     }
 }

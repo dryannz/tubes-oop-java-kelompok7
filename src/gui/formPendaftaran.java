@@ -1,12 +1,13 @@
 package gui;
 
-import model.*;
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class formPendaftaran extends JFrame {
+
     private sistemPendaftaran sistem;
     private daftarKursus frameDataSiswa;
 
@@ -20,14 +21,14 @@ public class formPendaftaran extends JFrame {
         setupGUI();
         setVisible(true);
     }
-    
+
+    // ================= SETUP GUI =================
     private void setupGUI() {
         setTitle("Pendaftaran Kursus Online");
         setSize(550, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        
-        // Panel utama
+
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
@@ -188,6 +189,7 @@ public class formPendaftaran extends JFrame {
         String email = inputEmail.getText().trim();
         String telepon = inputTelepon.getText().trim();
 
+
         if (nama.isEmpty() || email.isEmpty() || telepon.isEmpty()) {
             JOptionPane.showMessageDialog(
                 this,
@@ -206,6 +208,7 @@ public class formPendaftaran extends JFrame {
         }
 
         String kodeKursus = selectedKursus.substring(
+            selectedKursus.indexOf('(') + 1,
             selectedKursus.indexOf('(') + 1,
             selectedKursus.indexOf(')')
         ).trim();

@@ -1,13 +1,12 @@
 package gui;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import model.*;
 
 public class formPendaftaran extends JFrame {
-
     private sistemPendaftaran sistem;
     private daftarKursus frameDataSiswa;
 
@@ -21,14 +20,14 @@ public class formPendaftaran extends JFrame {
         setupGUI();
         setVisible(true);
     }
-
-    // ================= SETUP GUI =================
+    
     private void setupGUI() {
         setTitle("Pendaftaran Kursus Online");
         setSize(550, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+        
+        // Panel utama
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
@@ -66,7 +65,7 @@ public class formPendaftaran extends JFrame {
         labelBiaya.setForeground(Color.RED);
         labelBiaya.setFont(new Font("Arial", Font.BOLD, 12));
         
-        comboMetode = new JComboBox<>(new String[]{"","Transfer Bank", "Kartu Kredit", "E-Wallet", "GRATIS"});
+        comboMetode = new JComboBox<>(new String[]{"","Transfer Bank", "Kartu Kredit", "E-Wallet"});
 
         // Tambah komponen ke form dengan GridBagLayout
         gbc.gridx = 0; gbc.gridy = 0;
@@ -162,14 +161,13 @@ public class formPendaftaran extends JFrame {
         comboMetode.setEnabled(false);
         comboMetode.setSelectedItem("GRATIS");
         comboMetode.setToolTipText(
-            "Kursus gratis → status otomatis SUKSES"
+            "Kursus Gratis"
         );
     } else {
         // Kursus berbayar → biarkan user & MODEL yang menentukan status
         comboMetode.setEnabled(true);
-        comboMetode.setSelectedItem(""); // bisa kosong → PENDING
         comboMetode.setToolTipText(
-            "Kosong / GRATIS → simulasi PENDING"
+            "Pilih Metode Pembayaran"
         );
     }
 }
@@ -189,7 +187,6 @@ public class formPendaftaran extends JFrame {
         String email = inputEmail.getText().trim();
         String telepon = inputTelepon.getText().trim();
 
-
         if (nama.isEmpty() || email.isEmpty() || telepon.isEmpty()) {
             JOptionPane.showMessageDialog(
                 this,
@@ -208,7 +205,6 @@ public class formPendaftaran extends JFrame {
         }
 
         String kodeKursus = selectedKursus.substring(
-            selectedKursus.indexOf('(') + 1,
             selectedKursus.indexOf('(') + 1,
             selectedKursus.indexOf(')')
         ).trim();

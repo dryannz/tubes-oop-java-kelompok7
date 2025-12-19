@@ -1,10 +1,10 @@
 package gui;
 
-import model.*;
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import model.*;
 
 public class formPendaftaran extends JFrame {
     private sistemPendaftaran sistem;
@@ -65,7 +65,7 @@ public class formPendaftaran extends JFrame {
         labelBiaya.setForeground(Color.RED);
         labelBiaya.setFont(new Font("Arial", Font.BOLD, 12));
         
-        comboMetode = new JComboBox<>(new String[]{"","Transfer Bank", "Kartu Kredit", "E-Wallet", "GRATIS"});
+        comboMetode = new JComboBox<>(new String[]{"","Transfer Bank", "Kartu Kredit", "E-Wallet"});
 
         // Tambah komponen ke form dengan GridBagLayout
         gbc.gridx = 0; gbc.gridy = 0;
@@ -161,14 +161,13 @@ public class formPendaftaran extends JFrame {
         comboMetode.setEnabled(false);
         comboMetode.setSelectedItem("GRATIS");
         comboMetode.setToolTipText(
-            "Kursus gratis → status otomatis SUKSES"
+            "Kursus Gratis"
         );
     } else {
         // Kursus berbayar → biarkan user & MODEL yang menentukan status
         comboMetode.setEnabled(true);
-        comboMetode.setSelectedItem(""); // bisa kosong → PENDING
         comboMetode.setToolTipText(
-            "Kosong / GRATIS → simulasi PENDING"
+            "Pilih Metode Pembayaran"
         );
     }
 }
@@ -220,11 +219,27 @@ public class formPendaftaran extends JFrame {
         try {
         siswa siswa = null;
 
-        // cari siswa berdasarkan EMAIL (identifier unik)
         for (siswa s : sistem.getDaftarSiswa()) {
+
             if (s.getEmail().equalsIgnoreCase(email)) {
+
+                // NAMA BEDA = TOLAK
+                if (!s.getNama().equalsIgnoreCase(nama)) {
+                    throw new IllegalArgumentException(
+                        "Email sudah terdaftar dengan nama berbeda!"
+                    );
+                }
+
+                // EMAIL & NAMA SAMA = SISWA LAMA
                 siswa = s;
                 break;
+            }
+
+            // NAMA SAMA TAPI EMAIL BEDA = TOLAK
+            if (s.getNama().equalsIgnoreCase(nama)) {
+                throw new IllegalArgumentException(
+                    "Nama sudah terdaftar dengan email berbeda!"
+                );
             }
         }
 
@@ -256,7 +271,7 @@ public class formPendaftaran extends JFrame {
                 metodeBayar
             );
 
-            // 4️⃣ TAMPILKAN HASIL
+            // TAMPILKAN HASIL
             showConfirmationDialog(siswa, kursusObj, transaksi);
             handleReset(e);
 

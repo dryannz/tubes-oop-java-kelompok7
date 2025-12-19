@@ -1,113 +1,120 @@
 package gui;
 
-import model.*;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import model.*;
 
 public class daftarKursus extends JFrame {
+
     private sistemPendaftaran sistem;
     private JTable table;
     private DefaultTableModel tableModel;
-    
+
     public daftarKursus(sistemPendaftaran sistem) {
         this.sistem = sistem;
-        setupGUI();
+        initGUI();
         loadData();
         setVisible(true);
     }
-    
-    private void setupGUI() {
-        setTitle("Data Siswa Terdaftar");
-        setSize(800, 500);
+
+    private void initGUI() {
+        setTitle("Daftar Siswa & Kursus");
+        setSize(850, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        
+
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        
-        // Header
+
+        // ===== Header =====
         JLabel title = new JLabel("DATA SISWA TERDAFTAR", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 18));
         title.setForeground(new Color(70, 130, 180));
-        
-        // Tabel
-        String[] columns = {"No", "ID", "Nama", "Email", "Telepon", "Kursus Diambil"};
-        tableModel = new DefaultTableModel(columns, 0) {
+
+        // ===== Tabel =====
+        String[] kolom = {
+            "No", "ID Siswa", "Nama", "Email", "Telepon", "Kursus Diambil"
+        };
+
+        tableModel = new DefaultTableModel(kolom, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        
+
         table = new JTable(tableModel);
-        table.setRowHeight(30);
+        table.setRowHeight(28);
         JScrollPane scrollPane = new JScrollPane(table);
-        
-        // Tombol
+
+        // ===== Tombol =====
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        
+
         JButton btnRefresh = new JButton("Refresh");
         btnRefresh.setBackground(new Color(52, 152, 219));
         btnRefresh.setForeground(Color.WHITE);
         btnRefresh.addActionListener(e -> refreshData());
-        
+
+        JButton btnDetail = new JButton("Lihat Detail");
+        btnDetail.setBackground(new Color(155, 89, 182));
+        btnDetail.setForeground(Color.WHITE);
+        btnDetail.addActionListener(e -> new dataSiswa(sistem));
+
         JButton btnTutup = new JButton("Tutup");
         btnTutup.setBackground(new Color(231, 76, 60));
         btnTutup.setForeground(Color.WHITE);
         btnTutup.addActionListener(e -> dispose());
-        
+
         buttonPanel.add(btnRefresh);
+        buttonPanel.add(btnDetail);
         buttonPanel.add(btnTutup);
-        
+
+        // ===== Layout =====
         mainPanel.add(title, BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-        
+
         add(mainPanel);
     }
-    
-    // Load data siswa ke tabel
+
     private void loadData() {
         tableModel.setRowCount(0);
-        
+
         List<siswa> daftarSiswa = sistem.getDaftarSiswa();
-        
-        for (int i = 0; i < daftarSiswa.size(); i++) {
-            siswa s = daftarSiswa.get(i);
-            
-            // Ambil daftar kursus siswa
-            List<String> kodeKursusList = s.getDaftarKursus();
-            StringBuilder kursusStr = new StringBuilder();
-            
-            if (kodeKursusList != null && !kodeKursusList.isEmpty()) {
-                for (String kode : kodeKursusList) {
-                    kursus k = sistem.cariKursus(kode);
-                    if (k != null) {
-                        if (kursusStr.length() > 0) {
-                            kursusStr.append(", ");
-                        }
-                        kursusStr.append(k.getNama());
-                    }
-                }
-            } else {
-                kursusStr.append("-");
-            }
-            
+        int no = 1;
+
+        for (siswa s : daftarSiswa) {
+            String kursusStr = formatKursus(s);
+
             tableModel.addRow(new Object[]{
-                i + 1,                                      // No
-                s.getIdSiswa(),                             // ID
-                s.getNama(),                                // Nama
-                s.getEmail(),                               // Email
-                s.getNomorTelepon() != null ? 
-                    s.getNomorTelepon() : "-",              // Telepon
-                kursusStr.toString()                        // Kursus Diambil
+                no++,
+                s.getIdSiswa(),
+                s.getNama(),
+                s.getEmail(),
+                s.getNomorTelepon() != null ? s.getNomorTelepon() : "-",
+                kursusStr
             });
         }
     }
-    
-    // Dipanggil dari GUI lain
+
+    private String formatKursus(siswa s) {
+        if (s.getDaftarKursus() == null || s.getDaftarKursus().isEmpty()) {
+            return "-";
+        }
+
+        StringBuilder hasil = new StringBuilder();
+        for (String kode : s.getDaftarKursus()) {
+            kursus k = sistem.cariKursus(kode);
+            if (k != null) {
+                if (hasil.length() > 0) hasil.append(", ");
+                hasil.append(k.getNama());
+            }
+        }
+        return hasil.toString();
+    }
+
     public void refreshData() {
         loadData();
     }

@@ -219,11 +219,27 @@ public class formPendaftaran extends JFrame {
         try {
         siswa siswa = null;
 
-        // cari siswa berdasarkan EMAIL (identifier unik)
         for (siswa s : sistem.getDaftarSiswa()) {
+
             if (s.getEmail().equalsIgnoreCase(email)) {
+
+                // NAMA BEDA = TOLAK
+                if (!s.getNama().equalsIgnoreCase(nama)) {
+                    throw new IllegalArgumentException(
+                        "Email sudah terdaftar dengan nama berbeda!"
+                    );
+                }
+
+                // EMAIL & NAMA SAMA = SISWA LAMA
                 siswa = s;
                 break;
+            }
+
+            // NAMA SAMA TAPI EMAIL BEDA = TOLAK
+            if (s.getNama().equalsIgnoreCase(nama)) {
+                throw new IllegalArgumentException(
+                    "Nama sudah terdaftar dengan email berbeda!"
+                );
             }
         }
 
@@ -255,7 +271,7 @@ public class formPendaftaran extends JFrame {
                 metodeBayar
             );
 
-            // 4️⃣ TAMPILKAN HASIL
+            // TAMPILKAN HASIL
             showConfirmationDialog(siswa, kursusObj, transaksi);
             handleReset(e);
 

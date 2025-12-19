@@ -32,7 +32,7 @@ public class daftarKursus extends JFrame {
         title.setFont(new Font("Arial", Font.BOLD, 18));
         title.setForeground(new Color(70, 130, 180));
         
-        // Tabel dengan kolom yang benar
+        // Tabel
         String[] columns = {"No", "ID", "Nama", "Email", "Telepon", "Kursus Diambil"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -47,10 +47,11 @@ public class daftarKursus extends JFrame {
         
         // Tombol
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
         JButton btnRefresh = new JButton("Refresh");
         btnRefresh.setBackground(new Color(52, 152, 219));
         btnRefresh.setForeground(Color.WHITE);
-        btnRefresh.addActionListener(e -> loadData());
+        btnRefresh.addActionListener(e -> refreshData());
         
         JButton btnTutup = new JButton("Tutup");
         btnTutup.setBackground(new Color(231, 76, 60));
@@ -67,21 +68,14 @@ public class daftarKursus extends JFrame {
         add(mainPanel);
     }
     
-    // Method untuk load data dengan FIX mapping kolom
-    public void loadData() {
-        tableModel.setRowCount(0); // Clear table
+    // Load data siswa ke tabel
+    private void loadData() {
+        tableModel.setRowCount(0);
         
         List<siswa> daftarSiswa = sistem.getDaftarSiswa();
         
         for (int i = 0; i < daftarSiswa.size(); i++) {
             siswa s = daftarSiswa.get(i);
-            
-            // Debug log ke console
-            System.out.println("[DEBUG] Loading siswa: " + 
-                "ID=" + s.getIdSiswa() + ", " +
-                "Nama=" + s.getNama() + ", " +
-                "Email=" + s.getEmail() + ", " +
-                "Telepon=" + s.getNomorTelepon());
             
             // Ambil daftar kursus siswa
             List<String> kodeKursusList = s.getDaftarKursus();
@@ -91,7 +85,9 @@ public class daftarKursus extends JFrame {
                 for (String kode : kodeKursusList) {
                     kursus k = sistem.cariKursus(kode);
                     if (k != null) {
-                        if (kursusStr.length() > 0) kursusStr.append(", ");
+                        if (kursusStr.length() > 0) {
+                            kursusStr.append(", ");
+                        }
                         kursusStr.append(k.getNama());
                     }
                 }
@@ -99,18 +95,20 @@ public class daftarKursus extends JFrame {
                 kursusStr.append("-");
             }
             
-            // FIX: Pastikan urutan kolom sesuai
             tableModel.addRow(new Object[]{
-                i + 1,                    // No
-                s.getIdSiswa(),                // ID
-                s.getNama(),              // Nama
-                s.getEmail(),             // Email
-                s.getNomorTelepon() != null ? s.getNomorTelepon() : "-", // Telepon
-                kursusStr.toString()      // Kursus Diambil
+                i + 1,                                      // No
+                s.getIdSiswa(),                             // ID
+                s.getNama(),                                // Nama
+                s.getEmail(),                               // Email
+                s.getNomorTelepon() != null ? 
+                    s.getNomorTelepon() : "-",              // Telepon
+                kursusStr.toString()                        // Kursus Diambil
             });
         }
     }
+    
+    // Dipanggil dari GUI lain
     public void refreshData() {
-    loadData();
-}
+        loadData();
+    }
 }

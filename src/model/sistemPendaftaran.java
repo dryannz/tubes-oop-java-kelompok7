@@ -52,14 +52,8 @@ public class sistemPendaftaran {
         kursus kursus = cariKursus(kodeKursus);
 
         if (siswa == null) {
-                siswa = new siswa(
-                    idSiswa,
-                    "Siswa " + idSiswa,
-                    "-",
-                    "-"
-                );
-                daftarSiswa.add(siswa);
-            }
+            throw new IllegalArgumentException("Siswa belum terdaftar di sistem.");
+        }
 
         if (kursus == null) {
             throw new IllegalArgumentException("Error: Kursus dengan kode " + kodeKursus + " tidak ditemukan.");
@@ -127,7 +121,12 @@ public class sistemPendaftaran {
             System.err.println("Siswa dengan ID " + siswa.getIdSiswa() + " sudah terdaftar.");
         }
     }
-    
+
+    // Getter untuk id sistem
+    public String getidSistem() {
+    return idSistem;
+    }
+  
     // Getter untuk data array kelas (untuk combo box GUI)
     public String[] getDaftarNamaKursus() {
         String[] namaKursus = new String[daftarKursus.size()];

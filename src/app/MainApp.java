@@ -18,11 +18,11 @@ public class MainApp {
         // 2. INISIASI DATA KURSUS AWAL
         
         // Kursus Berbayar: kursusBerbayar(String kode, String nama, int kuota, double biaya) 
-        kursus javaOop = new kursusBerbayar("K001", "Java Fundamental OOP", 15, 500000.0); 
+        kursus javaOop = new kursusBerbayar("K001", "Java Fundamental OOP", 3, 500000.0); 
         kursus webDev = new kursusBerbayar("K002", "Fullstack Web Development", 20, 750000.0); 
         
        // Kursus Gratis: kursusGratis(String kode, String nama, int kuota) [cite: 85, 57]
-        kursus gitDasar = new kursusGratis("K003", "Pengantar Git & GitHub", 100); 
+        kursus gitDasar = new kursusGratis("K003", "Pengantar Git & GitHub", 100, 0); 
 
        // Tambahkan kursus-kursus ke sistem [cite: 86]
         sistem.tambahKursus(javaOop); 

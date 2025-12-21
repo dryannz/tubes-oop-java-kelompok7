@@ -1,12 +1,12 @@
 package app;
 
-import model.*;
 import gui.*;
+import model.*;
 
 public class mainGUI {
     public static void main(String[] args) {
         // Inisialisasi sistem
-        sistemPendaftaran sistem = new sistemPendaftaran("SYS001");
+        sistemPendaftaran sistem = new sistemPendaftaran("KEL-7");
         
         // Tambah kursus ke sistem
         sistem.tambahKursus(new kursusBerbayar("K001", "Java Programming", 3, 500000));

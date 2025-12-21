@@ -105,7 +105,7 @@ public class sistemPendaftaran {
         // 4. Update Siswa (hanya jika status SUKSES)
         if (statusPembayaran.equals("SUKSES")) {
             siswa.tambahKursus(kodeKursus);
-            siswa.tambahRiwayat("Berhasil enroll di " + kursus.getNama() + ". Transaksi: " + idTransaksi);
+            siswa.tambahRiwayat("Berhasil mendaftar di " + kursus.getNama() + ". Transaksi: " + idTransaksi);
         } else {
              siswa.tambahRiwayat("Pendaftaran di " + kursus.getNama() + " PENDING. Transaksi: " + idTransaksi);
         }

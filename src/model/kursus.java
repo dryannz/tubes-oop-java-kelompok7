@@ -6,11 +6,11 @@ import java.util.List;
 public abstract class kursus {
     protected String kodeKursus;
     protected String nama;
-    protected int kuotaMaksimal; // Berubah dari String ke int
+    protected int kuotaMaksimal;
     protected int jumlahSiswaTerdaftar;
     protected List<siswa> daftarSiswa;
 
-    // Constructor diperbarui untuk menerima int
+    // Constructor 
     public kursus(String kodeKursus, String nama, int kuotaMaksimal) {
         this.kodeKursus = kodeKursus;
         this.nama = nama;
@@ -22,7 +22,7 @@ public abstract class kursus {
     // method abstract
     public abstract double getBiaya();
 
-    // Method lebih sederhana tanpa perlu try-catch parsing
+    // method untuk mengecek ketersediaan kuota
     public boolean cekKetersediaan() {
         return jumlahSiswaTerdaftar < kuotaMaksimal;
     }

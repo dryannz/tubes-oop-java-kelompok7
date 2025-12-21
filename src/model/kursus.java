@@ -6,33 +6,25 @@ import java.util.List;
 public abstract class kursus {
     protected String kodeKursus;
     protected String nama;
-    protected String kuotaMaksimal; 
+    protected int kuotaMaksimal; // Berubah dari String ke int
     protected int jumlahSiswaTerdaftar;
     protected List<siswa> daftarSiswa;
 
-    // Constructor
+    // Constructor diperbarui untuk menerima int
     public kursus(String kodeKursus, String nama, int kuotaMaksimal) {
         this.kodeKursus = kodeKursus;
         this.nama = nama;
-        this.kuotaMaksimal = String.valueOf(kuotaMaksimal);
+        this.kuotaMaksimal = kuotaMaksimal;
         this.jumlahSiswaTerdaftar = 0;
         this.daftarSiswa = new ArrayList<>();
     }
 
-    // methode abstract
-    public abstract  double getBiaya();
+    // method abstract
+    public abstract double getBiaya();
 
-    // method untuk mengecek ketersediaan kursus
+    // Method lebih sederhana tanpa perlu try-catch parsing
     public boolean cekKetersediaan() {
-        // Mengubah String kuotaMaksimal ke Integer untuk perbandingan
-        try {
-            int kuota = Integer.parseInt(kuotaMaksimal);
-            return jumlahSiswaTerdaftar < kuota;
-        } catch (NumberFormatException e) {
-            // Penanganan jika kuotaMaksimal tidak valid (String bukan angka)
-            System.err.println("Error: Kuota Maksimal bukan angka yang valid: " + kuotaMaksimal);
-            return false; 
-        }
+        return jumlahSiswaTerdaftar < kuotaMaksimal;
     }
 
     // method untuk menambahkan siswa ke dalam kursus
@@ -42,7 +34,8 @@ public abstract class kursus {
             jumlahSiswaTerdaftar++;
         } else {
             throw new kuotaPenuhException(
-                this.kodeKursus, "Maaf,Kursus " + this.nama + " sudah penuh mencapai kuota maksimal. (" + this.kuotaMaksimal + " siswa)"
+                this.kodeKursus, 
+                "Maaf, Kursus " + this.nama + " sudah penuh mencapai kuota maksimal. (" + this.kuotaMaksimal + " siswa)"
             );
         }
     }
@@ -51,15 +44,19 @@ public abstract class kursus {
     public String getKodeKursus() {
         return kodeKursus;
     } 
+
     public String getNama() {
         return nama;
     }
-    public String getKuotaMaksimal() {
+
+    public int getKuotaMaksimal() { // Return type berubah menjadi int
         return kuotaMaksimal;
     }  
+
     public int getJumlahSiswaTerdaftar() {
         return jumlahSiswaTerdaftar;
     }
+
     public List<siswa> getDaftarSiswa() {
         return daftarSiswa;
     }

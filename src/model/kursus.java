@@ -49,7 +49,7 @@ public abstract class kursus {
         return nama;
     }
 
-    public int getKuotaMaksimal() { // Return type berubah menjadi int
+    public int getKuotaMaksimal() { 
         return kuotaMaksimal;
     }  
 

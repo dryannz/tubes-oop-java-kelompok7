@@ -105,7 +105,7 @@ public class sistemPendaftaran {
         // 4. Update Siswa (hanya jika status SUKSES)
         if (statusPembayaran.equals("SUKSES")) {
             siswa.tambahKursus(kodeKursus);
-            siswa.tambahRiwayat("Berhasil mendaftar di " + kursus.getNama() + ". Transaksi: " + idTransaksi);
+            siswa.tambahRiwayat("Berhasil mendaftar di " + kursus.getNama() + ". \n  Transaksi: " + idTransaksi + ". \n  Menggunakan: " + metodePembayaran + "\n");
         } else {
              siswa.tambahRiwayat("Pendaftaran di " + kursus.getNama() + " PENDING. Transaksi: " + idTransaksi);
         }
@@ -124,10 +124,10 @@ public class sistemPendaftaran {
 
     // Getter untuk id sistem
     public String getidSistem() {
-    return idSistem;
+        return idSistem;
     }
   
-    // Getter untuk data array kelas (untuk combo box GUI)
+    // Getter untuk data array kelas (untuk combo box GUI) - format lama
     public String[] getDaftarNamaKursus() {
         String[] namaKursus = new String[daftarKursus.size()];
         for (int i = 0; i < daftarKursus.size(); i++) {
@@ -136,12 +136,32 @@ public class sistemPendaftaran {
         return namaKursus;
     }
     
+    // Getter untuk data kursus dengan informasi kuota
+    public String[] getDaftarKursusDenganKuota() {
+        String[] daftar = new String[daftarKursus.size()];
+        for (int i = 0; i < daftarKursus.size(); i++) {
+            kursus k = daftarKursus.get(i);
+            // Format: "JAVA PROGRAMMING (K001) | 0/3 Terdaftar"
+            daftar[i] = String.format("%s (%s) | %d/%d Terdaftar",
+                k.getNama().toUpperCase(),
+                k.getKodeKursus(),
+                k.getJumlahSiswaTerdaftar(),
+                k.getKuotaMaksimal());
+        }
+        return daftar;
+    }
+    
     // Getter yang tersisa
-    public List<kursus> getDaftarKursus() { return daftarKursus; }
-    public List<siswa> getDaftarSiswa() { return daftarSiswa; }
+    public List<kursus> getDaftarKursus() { 
+        return daftarKursus; 
+    }
+    
+    public List<siswa> getDaftarSiswa() { 
+        return daftarSiswa; 
+    }
 
+    // Metode getIdSistem untuk konsistensi (menghapus duplikat)
     public String getIdSistem() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIdSistem'");
+        return idSistem;
     }
 }

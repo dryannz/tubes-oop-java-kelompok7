@@ -209,7 +209,7 @@ public class dataSiswa extends JFrame {
         riwayatArea.setText("RIWAYAT PENDAFTARAN:\n");
 
         for (String r : siswa.getLihatRiwayatPendaftaran()) {
-            riwayatArea.append("- " + r + "\n");
+            riwayatArea.append("\n- " + r + "\n");
         }
 
         JScrollPane scrollRiwayat = new JScrollPane(riwayatArea);

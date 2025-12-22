@@ -58,14 +58,51 @@ public class formPendaftaran extends JFrame {
         inputEmail = new JTextField(20);
         inputTelepon = new JTextField(20);
         
-        comboKursus = new JComboBox<>(sistem.getDaftarNamaKursus());
+        // Inisialisasi comboKursus dengan data kuota dari backend
+        comboKursus = new JComboBox<>(sistem.getDaftarKursusDenganKuota());
+        
+        // Tambahkan custom renderer untuk warna
+        comboKursus.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value,
+                    int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                
+                if (value != null) {
+                    String text = value.toString();
+                    
+                    // Parse kode kursus untuk cek kuota
+                    if (text.contains("(") && text.contains(")")) {
+                        String kode = text.substring(
+                            text.indexOf('(') + 1,
+                            text.indexOf(')')
+                        ).trim();
+                        
+                        kursus k = sistem.cariKursus(kode);
+                        if (k != null && !k.cekKetersediaan()) {
+                            // Jika kuota penuh, beri warna merah
+                            setForeground(Color.RED);
+                            setText(text + " [PENUH]");
+                        } else if (isSelected) {
+                            setForeground(Color.WHITE);
+                            setBackground(new Color(70, 130, 180));
+                        } else {
+                            setForeground(Color.BLACK);
+                            setBackground(Color.WHITE);
+                        }
+                    }
+                }
+                return this;
+            }
+        });
+        
         comboKursus.addActionListener(e -> updateBiayaDanMetode());
         
         labelBiaya = new JLabel("Rp 0");
         labelBiaya.setForeground(Color.RED);
         labelBiaya.setFont(new Font("Arial", Font.BOLD, 12));
         
-        comboMetode = new JComboBox<>(new String[]{"","Transfer Bank", "Kartu Kredit", "E-Wallet"});
+        comboMetode = new JComboBox<>(new String[]{"", "Transfer Bank", "Kartu Kredit", "E-Wallet"});
 
         // Tambah komponen ke form dengan GridBagLayout
         gbc.gridx = 0; gbc.gridy = 0;
@@ -141,42 +178,99 @@ public class formPendaftaran extends JFrame {
         updateBiayaDanMetode();
     }
     
-   private void updateBiayaDanMetode() {
-    String selected = (String) comboKursus.getSelectedItem();
-    if (selected == null) return;
-
-    String kode = selected.substring(
-            selected.indexOf('(') + 1,
-            selected.indexOf(')')
-    ).trim();
-
-    kursus k = sistem.cariKursus(kode);
-    if (k == null) return;
-
-    double biaya = k.getBiaya();
-    labelBiaya.setText("Rp " + String.format("%,.0f", biaya));
-
-    if (biaya == 0) {
-        // Kursus gratis → biarkan MODEL yang set GRATIS & SUKSES
-        comboMetode.setEnabled(false);
-        comboMetode.setSelectedItem("GRATIS");
-        comboMetode.setToolTipText(
-            "Kursus Gratis"
-        );
-    } else {
-        // Kursus berbayar → biarkan user & MODEL yang menentukan status
-        comboMetode.setEnabled(true);
-        comboMetode.setToolTipText(
-            "Pilih Metode Pembayaran"
-        );
+    private void updateBiayaDanMetode() {
+        String selected = (String) comboKursus.getSelectedItem();
+        if (selected == null || selected.isEmpty()) return;
+        
+        // Parse kode kursus dari string yang baru
+        // Format: "JAVA PROGRAMMING (K001) | 0/3 Terdaftar"
+        String kode;
+        try {
+            kode = selected.substring(
+                selected.indexOf('(') + 1,
+                selected.indexOf(')')
+            ).trim();
+        } catch (StringIndexOutOfBoundsException e) {
+            // Fallback jika format tidak sesuai
+            // Coba ambil kode dengan cara lain
+            if (selected.contains("K")) {
+                int start = selected.indexOf("K");
+                kode = selected.substring(start, Math.min(start + 4, selected.length()));
+            } else {
+                return;
+            }
+        }
+        
+        kursus k = sistem.cariKursus(kode);
+        if (k == null) return;
+        
+        double biaya = k.getBiaya();
+        labelBiaya.setText("Rp " + String.format("%,.0f", biaya));
+        
+        // Update informasi kuota di tooltip
+        String kuotaInfo = String.format("Kuota: %d/%d siswa - %s",
+            k.getJumlahSiswaTerdaftar(),
+            k.getKuotaMaksimal(),
+            k.cekKetersediaan() ? "Masih tersedia" : "PENUH");
+        comboKursus.setToolTipText(kuotaInfo);
+        
+        if (biaya == 0) {
+            // Kursus gratis → biarkan MODEL yang set GRATIS & SUKSES
+            comboMetode.setEnabled(false);
+            comboMetode.setSelectedItem("GRATIS");
+            comboMetode.setToolTipText("Kursus Gratis");
+        } else {
+            // Kursus berbayar → biarkan user & MODEL yang menentukan status
+            comboMetode.setEnabled(true);
+            comboMetode.setToolTipText("Pilih Metode Pembayaran");
+        }
     }
-}
+    
+    // Method untuk refresh comboBox dengan data terbaru dari backend
+    private void refreshKursusComboBox() {
+        // Simpan item yang sedang dipilih
+        String selected = (String) comboKursus.getSelectedItem();
+        
+        // Dapatkan data terbaru dari backend
+        String[] daftarTerbaru = sistem.getDaftarKursusDenganKuota();
+        
+        // Clear dan isi ulang comboBox
+        comboKursus.removeAllItems();
+        for (String kursus : daftarTerbaru) {
+            comboKursus.addItem(kursus);
+        }
+        
+        // Coba set kembali ke item yang sama (jika masih ada)
+        if (selected != null) {
+            for (int i = 0; i < comboKursus.getItemCount(); i++) {
+                if (comboKursus.getItemAt(i).toString().contains(selected)) {
+                    comboKursus.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+        
+        // Jika tidak ada yang dipilih, pilih item pertama
+        if (comboKursus.getSelectedIndex() == -1 && comboKursus.getItemCount() > 0) {
+            comboKursus.setSelectedIndex(0);
+        }
+        
+        // Update biaya dan metode berdasarkan pilihan baru
+        updateBiayaDanMetode();
+    }
     
     private void handleReset(ActionEvent e) {
         inputNama.setText("");
         inputEmail.setText("");
         inputTelepon.setText("");
-        comboKursus.setSelectedIndex(0);
+        
+        // Refresh comboBox untuk update kuota terbaru
+        refreshKursusComboBox();
+        
+        if (comboKursus.getItemCount() > 0) {
+            comboKursus.setSelectedIndex(0);
+        }
+        
         comboMetode.setSelectedIndex(0);
         updateBiayaDanMetode();
     }
@@ -204,10 +298,17 @@ public class formPendaftaran extends JFrame {
             return;
         }
 
-        String kodeKursus = selectedKursus.substring(
-            selectedKursus.indexOf('(') + 1,
-            selectedKursus.indexOf(')')
-        ).trim();
+        // Parse kode kursus dari format baru
+        String kodeKursus;
+        try {
+            kodeKursus = selectedKursus.substring(
+                selectedKursus.indexOf('(') + 1,
+                selectedKursus.indexOf(')')
+            ).trim();
+        } catch (StringIndexOutOfBoundsException ex) {
+            JOptionPane.showMessageDialog(this, "Format kursus tidak valid!");
+            return;
+        }
 
         String metodeBayar = (String) comboMetode.getSelectedItem();
 
@@ -217,52 +318,50 @@ public class formPendaftaran extends JFrame {
         }
 
         try {
-        siswa siswa = null;
+            siswa siswa = null;
 
-        for (siswa s : sistem.getDaftarSiswa()) {
+            for (siswa s : sistem.getDaftarSiswa()) {
+                if (s.getEmail().equalsIgnoreCase(email)) {
+                    // NAMA BEDA = TOLAK
+                    if (!s.getNama().equalsIgnoreCase(nama)) {
+                        throw new IllegalArgumentException(
+                            "Email sudah terdaftar dengan nama berbeda!"
+                        );
+                    }
 
-            if (s.getEmail().equalsIgnoreCase(email)) {
-
-                // NAMA BEDA = TOLAK
-                if (!s.getNama().equalsIgnoreCase(nama)) {
-                    throw new IllegalArgumentException(
-                        "Email sudah terdaftar dengan nama berbeda!"
-                    );
+                    // EMAIL & NAMA SAMA = SISWA LAMA
+                    siswa = s;
+                    break;
                 }
 
-                // EMAIL & NAMA SAMA = SISWA LAMA
-                siswa = s;
-                break;
+                // NAMA SAMA TAPI EMAIL BEDA = TOLAK
+                if (s.getNama().equalsIgnoreCase(nama)) {
+                    throw new IllegalArgumentException(
+                        "Nama sudah terdaftar dengan email berbeda!"
+                    );
+                }
             }
 
-            // NAMA SAMA TAPI EMAIL BEDA = TOLAK
-            if (s.getNama().equalsIgnoreCase(nama)) {
-                throw new IllegalArgumentException(
-                    "Nama sudah terdaftar dengan email berbeda!"
+            String idSiswa;
+
+            // kalau siswa belum ada → buat baru
+            if (siswa == null) {
+                idSiswa = "S" + String.format(
+                    "%03d", sistem.getDaftarSiswa().size() + 1
                 );
+
+                siswa = new siswa(
+                    idSiswa,
+                    nama,
+                    email,
+                    telepon
+                );
+
+                sistem.tambahSiswa(siswa);
+            } else {
+                // kalau sudah ada → pakai ID lama
+                idSiswa = siswa.getIdSiswa();
             }
-        }
-
-        String idSiswa;
-
-        // kalau siswa belum ada → buat baru
-        if (siswa == null) {
-            idSiswa = "S" + String.format(
-                "%03d", sistem.getDaftarSiswa().size() + 1
-            );
-
-            siswa = new siswa(
-                idSiswa,
-                nama,
-                email,
-                telepon
-            );
-
-            sistem.tambahSiswa(siswa);
-        } else {
-            // kalau sudah ada → pakai ID lama
-            idSiswa = siswa.getIdSiswa();
-        }
 
             // BARU PROSES ENROLL
             pembayaran transaksi = sistem.enrollSiswa(
@@ -273,19 +372,23 @@ public class formPendaftaran extends JFrame {
 
             // TAMPILKAN HASIL
             showConfirmationDialog(siswa, kursusObj, transaksi);
+            
+            // REFRESH COMBOBOX SETELAH PENDAFTARAN BERHASIL
+            refreshKursusComboBox();
+            
             handleReset(e);
 
-            } catch (kuotaPenuhException kpe) {
-                handleKuotaPenuhException(kpe, kursusObj.getNama());
+        } catch (kuotaPenuhException kpe) {
+            handleKuotaPenuhException(kpe, kursusObj.getNama());
 
-            } catch (IllegalArgumentException iae) {
-                JOptionPane.showMessageDialog(
-                    this,
-                    iae.getMessage(),
-                    "Pendaftaran Gagal",
-                    JOptionPane.ERROR_MESSAGE
-                );
-            }
+        } catch (IllegalArgumentException iae) {
+            JOptionPane.showMessageDialog(
+                this,
+                iae.getMessage(),
+                "Pendaftaran Gagal",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     private void handleKuotaPenuhException(kuotaPenuhException kpe, String namaKursus) {
@@ -380,20 +483,19 @@ public class formPendaftaran extends JFrame {
         btnOK.addActionListener(e -> dialog.dispose());
         
         if (transaksi.getStatus().equals("PENDING")) {
-        JButton btnBayarUlang = new JButton("Bayar Ulang");
-        btnBayarUlang.setBackground(new Color(241, 196, 15));
-        btnBayarUlang.setForeground(Color.BLACK);
+            JButton btnBayarUlang = new JButton("Bayar Ulang");
+            btnBayarUlang.setBackground(new Color(241, 196, 15));
+            btnBayarUlang.setForeground(Color.BLACK);
 
-        btnBayarUlang.addActionListener(e -> {
-            dialog.dispose();
+            btnBayarUlang.addActionListener(e -> {
+                dialog.dispose();
+                // arahkan user ke form lagi (tanpa ubah model)
+                comboMetode.setEnabled(true);
+                comboMetode.setSelectedIndex(1); // Transfer Bank
+            });
 
-        // arahkan user ke form lagi (tanpa ubah model)
-        comboMetode.setEnabled(true);
-        comboMetode.setSelectedIndex(1); // Transfer Bank
-    });
-
-        buttonPanel.add(btnBayarUlang);
-}
+            buttonPanel.add(btnBayarUlang);
+        }
 
         JButton btnLihatRiwayat = new JButton("Lihat Riwayat");
         btnLihatRiwayat.setBackground(new Color(155, 89, 182));
